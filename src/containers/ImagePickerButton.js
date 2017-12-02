@@ -1,17 +1,20 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { selectImage } from '../redux/comment/comment.action'
 import { Button, Icon } from 'native-base'
 import ImagePicker from 'react-native-image-picker'
 
 class ImagePickerButton extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      avatarSource: null
-    }
   }
 
-  __showImagePicker() {
-    ImagePicker.launchImageLibrary({}, (response)  => {
+  _showImagePicker() {
+    ImagePicker.launchImageLibrary({
+      mediaType: 'photo',
+      maxWidth: 1280,
+      maxHeight: 720
+    }, (response)  => {
       console.log('Response = ', response)
 
       if (response.didCancel) {
@@ -19,24 +22,26 @@ class ImagePickerButton extends Component {
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error)
       } else {
-        // You can also display the image using data:
-        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-        let source = { uri: response.uri }
-
-        this.setState({
-          avatarSource: source
-        })
+        this.props.selectImage(response)
       }
     })
   }
 
   render() {
     return (
-      <Button transparent onPress={() => this.__showImagePicker()}>
+      <Button transparent onPress={() => this._showImagePicker()}>
         <Icon name='archive' />
       </Button>
     )
   }
 }
+
+const mapDispatchToProps = (dispatch) => ({
+  selectImage(image) {
+    dispatch(selectImage(image))
+  }
+})
+
+ImagePickerButton = connect(null, mapDispatchToProps)(ImagePickerButton)
 
 export default ImagePickerButton

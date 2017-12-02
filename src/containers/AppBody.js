@@ -1,23 +1,28 @@
-import React from 'react';
-import { Dimensions, Image } from 'react-native';
-import { Content, Text, Item, Thumbnail, Input, View } from 'native-base';
+import React from 'react'
+import { connect } from 'react-redux'
+import { Content, Spinner, Text, View } from 'native-base'
+import CommentArea from './CommentArea'
+import ImagePreview from './ImagePreview'
 
-const window = Dimensions.get('window');
-const imageSize = window.width - 40;
-
-const AppBody = () => (
+const AppBody = ({ isSendingComment }) => (
   <Content padder>
-    <Text>Share your photo with some comment to us...</Text>
-    <View padder style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Image
-        source={{ uri: 'https://www.codeproject.com/KB/GDI-plus/ImageProcessing2/flip.jpg' }}
-        style={{ width: imageSize, height: imageSize }}
-      />
-    </View>
-    <Item regular last>
-      <Input placeholder="Your comment..." />
-    </Item>
+    { isSendingComment &&
+      <Spinner color='blue' />
+    }
+    { !isSendingComment &&
+      <View>
+        <Text>Share your photo with some comment to us...</Text>
+        <ImagePreview />
+        <CommentArea />
+      </View>
+    }
   </Content>
-);
+)
 
-export default AppBody;
+const mapStateToProps = (state) => ({
+  isSendingComment: state.comment.isSending
+})
+
+AppBody = connect(mapStateToProps)(AppBody)
+
+export default AppBody
